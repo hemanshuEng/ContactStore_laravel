@@ -1787,6 +1787,14 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -1802,13 +1810,69 @@ __webpack_require__.r(__webpack_exports__);
   },
   mounted: function mounted() {
     console.log('contact Componet Loaded');
+    this.fetchContactList();
   },
   methods: {
+    fetchContactList: function fetchContactList() {
+      var _this = this;
+
+      console.log('Fecthing contact');
+      axios.get('api/contacts').then(function (response) {
+        console.log(response.data);
+        _this.list = response.data;
+      }).catch(function (error) {
+        console.log(error);
+      });
+    },
     createContact: function createContact() {
       console.log('creating contact');
+      var self = this;
+      var params = Object.assign({}, self.contact);
+      axios.post('api/contact/store', params).then(function () {
+        self.contact.name = '';
+        self.contact.email = '';
+        self.contact.phone = '';
+        self.edit = false;
+        self.fetchContactList();
+      }).catch(function (error) {
+        console.log(error);
+      });
       return;
     },
-    updateContact: function updateContact() {}
+    showContact: function showContact(id) {
+      var self = this;
+      axios.get('api/contact/' + id).then(function (response) {
+        self.contact.id = response.data.id;
+        self.contact.name = response.data.name;
+        self.contact.email = response.data.email;
+        self.contact.phone = response.data.phone;
+      });
+      self.edit = true;
+    },
+    updateContact: function updateContact(id) {
+      console.log('update contact');
+      var self = this;
+      var params = Object.assign({}, self.contact);
+      axios.patch('api/contact/' + id, params).then(function () {
+        self.contact.name = '';
+        self.contact.email = '';
+        self.contact.phone = '';
+        self.edit = false;
+        self.fetchContactList();
+      }).catch(function (error) {
+        console.log(error);
+      });
+    },
+    deleteContact: function deleteContact(id) {
+      console.log("delelte contact");
+      var self = this;
+      var params = Object.assign({}, self.contact);
+      axios.delete('api/contact/' + id, params).then(function (response) {
+        self.fetchContactList();
+      }).catch(function (error) {
+        console.log(error);
+      });
+    }
   }
 });
 
@@ -36671,7 +36735,7 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", [
-    _c("h1", [_vm._v("Contacts")]),
+    _c("h1", [_vm._v(" Add Contacts")]),
     _vm._v(" "),
     _c(
       "form",
@@ -36799,6 +36863,52 @@ var render = function() {
           )
         ])
       ]
+    ),
+    _vm._v(" "),
+    _c("h1", [_vm._v("Contacts")]),
+    _vm._v(" "),
+    _c(
+      "ul",
+      { staticClass: "list-group" },
+      _vm._l(_vm.list, function(contact) {
+        return _c("li", { staticClass: "list-group-item" }, [
+          _vm._v(
+            "\n        " +
+              _vm._s(contact.name) +
+              " [" +
+              _vm._s(contact.email) +
+              "] [" +
+              _vm._s(contact.phone) +
+              "]\n        "
+          ),
+          _c(
+            "button",
+            {
+              staticClass: "btn btn-default float-right ",
+              on: {
+                click: function($event) {
+                  _vm.showContact(contact.id)
+                }
+              }
+            },
+            [_vm._v("Edit")]
+          ),
+          _vm._v(" "),
+          _c(
+            "button",
+            {
+              staticClass: "btn btn-danger float-right",
+              on: {
+                click: function($event) {
+                  _vm.deleteContact(contact.id)
+                }
+              }
+            },
+            [_vm._v("Delete")]
+          )
+        ])
+      }),
+      0
     )
   ])
 }
@@ -48088,6 +48198,8 @@ window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.
  */
 // const files = require.context('./', true, /\.vue$/i)
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
+
+var axios = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
 
 Vue.component('contacts', __webpack_require__(/*! ./components/Contacts.vue */ "./resources/js/components/Contacts.vue").default);
 /**

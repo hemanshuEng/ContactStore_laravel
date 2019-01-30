@@ -30,7 +30,7 @@ Route::group(['middleware'=>'api'],function(){
         //update Contact
 
         Route::patch('contact/{id}',function(Request $request,$id){
-           return  Contact::findOrfail($id)->update(['name'=>$request->input(['name']),'email'=>$request->input(['email']),'phone'=>$request->input(['phone'])]);
+            Contact::findOrfail($id)->update(['name'=>$request->input(['name']),'email'=>$request->input(['email']),'phone'=>$request->input(['phone'])]);
         });
 
         Route::delete('contact/{id}',function($id){
